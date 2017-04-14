@@ -1,0 +1,5 @@
+---
+- name: "Prepare OpenStack cloud for rally benchmarks"
+  hosts: all
+  roles:
+    - rally

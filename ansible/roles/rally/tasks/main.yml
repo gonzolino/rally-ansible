@@ -1,0 +1,96 @@
+---
+- name: "Create openstack config directory"
+  file:
+    path: ~/.config/openstack
+    state: directory
+    recurse: true
+- name: "Upload clouds.yaml"
+  template:
+    src: clouds.yaml.j2
+    dest: ~/.config/openstack/clouds.yaml
+
+- name: "Upload rally deployment.json"
+  template:
+    src: rally_deployment.json.j2
+    dest: ~/deployment.json
+
+- name: "Download cirros image"
+  get_url:
+    url: "{{ cirros_url }}"
+    dest: "/tmp/cirros.img"
+
+- name: "Register cirros image"
+  os_image:
+    cloud: "{{ cloud.name }}"
+    name: cirros
+    container_format: bare
+    disk_format: qcow2
+    state: present
+    filename: "/tmp/cirros.img"
+
+- name: "Create rally projects"
+  os_project:
+    cloud: "{{ cloud.name }}"
+    state: present
+    name: "{{ item }}"
+    domain: Default
+    enabled: True
+  with_items: "{{ rally_projects }}"
+
+- name: "Create rally users"
+  os_user:
+    cloud: "{{ cloud.name }}"
+    state: present
+    name: "{{ item }}"
+    password: "{{ rally_password }}"
+    domain: Default
+    default_project: rally
+  with_items: "{{ rally_users }}"
+
+- name: "Assign roles to rally users"
+  os_user_role:
+    cloud: "{{ cloud.name }}"
+    user: "{{ item[0] }}"
+    role: "{{ rally_roles[item[0]][item[1]] }}"
+    project: "{{ item[1] }}"
+  with_nested:
+    - "{{ rally_users }}"
+    - "{{ rally_projects }}"
+
+- name: "Create rally networks"
+  os_network:
+    cloud: "{{ cloud.name }}"
+    project: "{{ item.value.project }}"
+    state: present
+    name: "{{ item.key }}"
+    shared: "{{ item.value.shared }}"
+    external: "{{ item.value.external }}"
+    # provider_network_type: "{{ item.value.network_type }}"
+    # provider_physical_network: "{{ item.value.physical_network }}"
+    # provider_segmentation_id: "{{ item.value.segmentation_id }}"
+  with_dict: "{{ rally_networks }}"
+
+- name: "Create rally subnets"
+  os_subnet:
+    cloud: "{{ cloud.name }}"
+    project: "{{ rally_networks[item.value.network].project }}"
+    state: present
+    network_name: "{{ item.value.network }}"
+    name: "{{ item.key }}"
+    cidr: "{{ item.value.cidr }}"
+    allocation_pool_start: "{{ item.value.allocation_pool.start }}"
+    allocation_pool_end: "{{ item.value.allocation_pool.end }}"
+    gateway_ip: "{{ item.value.gateway }}"
+    enable_dhcp: "{{ item.value.dhcp }}"
+  with_dict: "{{ rally_subnets }}"
+
+- name: "Create rally routers"
+  os_router:
+    cloud: "{{ cloud.name }}"
+    state: present
+    name: "{{ item.key }}"
+    network: "{{ item.value.network }}"
+    external_fixed_ips:
+      - subnet: "{{ item.value.subnet }}"
+        ip: "{{ item.value.ip }}"
+  with_dict: "{{ rally_routers }}"

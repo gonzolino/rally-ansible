@@ -1,0 +1,12 @@
+clouds:
+  {{ cloud.name }}:
+    auth:
+      auth_url: {{ cloud.auth_url }}
+      password: {{ cloud.password }}
+      project_domain_id: default
+      project_name: {{ cloud.project }}
+      user_domain_id: default
+      username: {{ cloud.user }}
+    identity_api_version: '3'
+    region_name: {{ cloud.region }}
+    volume_api_version: '2'

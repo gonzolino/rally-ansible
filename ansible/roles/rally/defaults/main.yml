@@ -1,0 +1,49 @@
+---
+cloud:
+  name: admin
+  auth_url: "http://192.168.50.3:5000/v3"
+  password: secrete
+  project: admin
+  user: admin
+  region: RegionOne
+cirros_url: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+rally_password: secret
+rally_projects:
+  # First rally project is considered to be the default project in
+  # deployment.json
+  - rally
+  - rally_network
+rally_users:
+  # First rally user is considered to be the admin user in deployment.json
+  - rally_backend
+  - rally_user
+rally_roles:
+  rally_backend:
+    rally: admin
+    rally_network: admin
+  rally_user:
+    rally: Member
+    rally_network: Member
+rally_networks:
+  rally_net:
+    project: rally
+    shared: yes
+    external: yes
+    # also enable corresponding lines at os_network when enabling these options
+    # network_type: vlan
+    # physical_network: physnet1
+    # segmentation_id: 415
+rally_subnets:
+  rally_sub:
+    network: rally_net
+    cidr: 10.244.11.0/24
+    allocation_pool:
+      start: 10.244.11.130
+      end: 10.244.11.200
+    gateway: 10.244.11.1
+    dhcp: no
+rally_routers:
+  rally_router:
+    network: rally_net
+    subnet: rally_sub
+    ip: 10.244.11.2

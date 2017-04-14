@@ -1,0 +1,29 @@
+{
+    "type": "ExistingCloud",
+    "creds": {
+        "openstack": {
+            "auth_url": "{{ cloud.auth_url }}",
+            "region_name": "{{ cloud.region }}",
+            "endpoint_type": "public",
+            "admin": {
+                "username": "{{ rally_users[0] }}",
+                "password": "{{ rally_password }}",
+                "user_domain_name": "Default",
+                "project_name": "{{ rally_projects[0] }}",
+                "project_domain_name": "Default",
+            },
+            "users": [
+              {
+                "username": "{{ rally_users[1] }}",
+                "user_domain_name": "Default",
+                "password": "{{ rally_password }}",
+                "project_name": "{{ rally_projects[0] }}",
+                "project_domain_name": "Default"
+              }
+            ],
+            "https_insecure": true,
+            "https_cacert": ""
+        }
+    }
+}
+
