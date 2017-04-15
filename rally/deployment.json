@@ -1,0 +1,29 @@
+{
+    "type": "ExistingCloud",
+    "creds": {
+        "openstack": {
+            "auth_url": "http://192.168.50.3:5000/v3",
+            "region_name": "RegionOne",
+            "endpoint_type": "public",
+            "admin": {
+                "username": "rally_backend",
+                "password": "secret",
+                "user_domain_name": "Default",
+                "project_name": "rally",
+                "project_domain_name": "Default",
+            },
+            "users": [
+              {
+                "username": "rally_user",
+                "user_domain_name": "Default",
+                "password": "secret",
+                "project_name": "rally",
+                "project_domain_name": "Default"
+              }
+            ],
+            "https_insecure": true,
+            "https_cacert": ""
+        }
+    }
+}
+

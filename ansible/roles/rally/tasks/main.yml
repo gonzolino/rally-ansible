@@ -9,11 +9,6 @@
     src: clouds.yaml.j2
     dest: ~/.config/openstack/clouds.yaml
 
-- name: "Upload rally deployment.json"
-  template:
-    src: rally_deployment.json.j2
-    dest: ~/deployment.json
-
 - name: "Download cirros image"
   get_url:
     url: "{{ cirros_url }}"
